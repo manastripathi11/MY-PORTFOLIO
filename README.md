@@ -45,7 +45,7 @@ MY PORTFOLIO/
 | Backend   | Node.js, Express 5, Mongoose                      |
 | Database  | MongoDB Atlas                                     |
 | Auth      | JWT (jsonwebtoken), bcryptjs                      |
-| Email     | Nodemailer (Gmail)                                |
+| Email     | Resend API (Gmail)                                |
 | Deploy    | Vercel (frontend) · Render (backend)              |
 
 ---
@@ -73,7 +73,7 @@ Create `backend/.env`:
 ```env
 MONGO_URI=your_mongodb_connection_string
 EMAIL_USER=your_gmail@gmail.com
-EMAIL_PASS=your_gmail_app_password
+RESEND_API_KEY=your_api_key
 ADMIN_PASSWORD=your_admin_password
 JWT_SECRET=your_jwt_secret_key
 PORT=5000
