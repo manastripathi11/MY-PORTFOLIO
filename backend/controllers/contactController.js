@@ -1,5 +1,6 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 const Message = require('../models/Message');
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sendContact = async (req, res) => {
     const { name, email, message } = req.body;
@@ -20,16 +21,8 @@ const sendContact = async (req, res) => {
     try {
         const newMessage = await Message.create({ name, email, message });
 
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS,
-            },
-        });
-
-        const mailOptions = {
-            from: `"Portfolio Contact" <${process.env.EMAIL_USER}>`,
+        await resend.emails.send({
+            from: 'Portfolio Contact Form <onboarding@resend.dev>',
             to: process.env.EMAIL_USER,
             replyTo: email,
             subject: `New Portfolio Contact Message from ${name}`,
@@ -52,10 +45,8 @@ const sendContact = async (req, res) => {
           </table>
           <p style="margin-top: 20px; color: #8b949e; font-size: 12px;">Sent from your portfolio website • ${new Date().toLocaleString()}</p>
         </div>
-      `,
-        };
-
-        await transporter.sendMail(mailOptions);
+      `
+        });
 
         res.status(201).json({
             success: true,
