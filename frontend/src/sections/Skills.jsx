@@ -41,7 +41,8 @@ const SKILLS = [
             { name: 'Vite' },
             { name: 'Cloudinary' },
             { name: 'Vercel' },
-            { name: 'Stripe' }
+            { name: 'Stripe' },
+            { name: 'Resend' }
         ],
     },
 ];
