@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FolderKanban, Briefcase, Mail, TrendingUp } from 'lucide-react';
+import { FolderKanban, Briefcase, Mail, TrendingUp, Zap, FileText } from 'lucide-react';
 import api from '../api/api';
 
 export default function Dashboard() {
@@ -62,6 +62,8 @@ export default function Dashboard() {
                         { label: '+ Add Project', href: '/admin/projects', color: 'var(--accent)' },
                         { label: '+ Add Experience', href: '/admin/experiences', color: '#00bcd4' },
                         { label: '📬 View Messages', href: '/admin/messages', color: '#a855f7' },
+                        { label: '⚡ Manage Skills', href: '/admin/skills', color: '#f59e0b' },
+                        { label: '📄 Update Resume', href: '/admin/resume', color: '#ec4899' },
                         { label: '🌐 View Portfolio', href: '/', color: 'var(--muted)' },
                     ].map(({ label, href, color }) => (
                         <a key={label} href={href} target={href === '/' ? '_blank' : undefined} rel="noreferrer"

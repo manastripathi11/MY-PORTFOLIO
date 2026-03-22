@@ -7,6 +7,8 @@ const contactRoutes = require('./routes/contactRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const experienceRoutes = require('./routes/experienceRoutes');
 const authRoutes = require('./routes/authRoutes');
+const skillRoutes = require('./routes/skillRoutes');
+const resumeRoutes = require('./routes/resumeRoutes');
 
 connectDB();
 
@@ -24,8 +26,9 @@ if (process.env.FRONTEND_URL) {
 app.use(cors({
     origin: (origin, callback) => {
         if (!origin) return callback(null, true);
+        const isLocalhost = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin);
         const isVercel = /\.vercel\.app$/.test(origin);
-        if (isVercel || allowedOrigins.includes(origin)) {
+        if (isLocalhost || isVercel || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
             console.warn('CORS blocked origin:', origin);
@@ -46,6 +49,8 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/experience', experienceRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/skills', skillRoutes);
+app.use('/api/resume', resumeRoutes);
 
 app.use((req, res) => {
     res.status(404).json({ success: false, error: `Route ${req.originalUrl} not found` });

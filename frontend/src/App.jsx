@@ -8,6 +8,8 @@ import Dashboard from './admin/Dashboard';
 import ManageProjects from './admin/ManageProjects';
 import ManageExperiences from './admin/ManageExperiences';
 import ManageMessages from './admin/ManageMessages';
+import ManageSkills from './admin/ManageSkills';
+import ManageResume from './admin/ManageResume';
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated } = useAuth();
@@ -32,6 +34,8 @@ function AppRoutes() {
         <Route path="projects" element={<ManageProjects />} />
         <Route path="experiences" element={<ManageExperiences />} />
         <Route path="messages" element={<ManageMessages />} />
+        <Route path="skills" element={<ManageSkills />} />
+        <Route path="resume" element={<ManageResume />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

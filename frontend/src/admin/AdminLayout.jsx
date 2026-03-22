@@ -1,12 +1,14 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LayoutDashboard, FolderKanban, Briefcase, Mail, LogOut, Code2, ExternalLink } from 'lucide-react';
+import { LayoutDashboard, FolderKanban, Briefcase, Mail, LogOut, Code2, ExternalLink, Zap, FileText } from 'lucide-react';
 
 const NAV = [
     { to: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { to: '/admin/projects', icon: FolderKanban, label: 'Projects' },
     { to: '/admin/experiences', icon: Briefcase, label: 'Experience' },
     { to: '/admin/messages', icon: Mail, label: 'Messages' },
+    { to: '/admin/skills', icon: Zap, label: 'Skills' },
+    { to: '/admin/resume', icon: FileText, label: 'Resume' },
 ];
 
 export default function AdminLayout() {

@@ -1,51 +1,5 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-
-const SKILLS = [
-    {
-        category: 'Frontend',
-        emoji: '🎨',
-        accentColor: '#00ff88',
-        items: [
-            { name: 'React' },
-            { name: 'JavaScript' },
-            { name: 'HTML5' },
-            { name: 'CSS3' },
-            { name: 'Tailwind CSS' },
-            { name: 'Framer Motion' },
-            { name: 'Bootstrap' }
-        ],
-    },
-    {
-        category: 'Backend',
-        emoji: '⚙️',
-        accentColor: '#00bcd4',
-        items: [
-            { name: 'Node.js' },
-            { name: 'Express.js' },
-            { name: 'MongoDB' },
-            { name: 'MySQL' },
-            { name: 'REST APIs' },
-            { name: 'JWT Auth' },
-            { name: 'Socket.io' },
-        ],
-    },
-    {
-        category: 'Tools & DevOps',
-        emoji: '🛠️',
-        accentColor: '#a855f7',
-        items: [
-            { name: 'GitHub' },
-            { name: 'Postman' },
-            { name: 'VS Code' },
-            { name: 'npm' },
-            { name: 'Vite' },
-            { name: 'Cloudinary' },
-            { name: 'Vercel' },
-            { name: 'Stripe' },
-            { name: 'Resend' }
-        ],
-    },
-];
 
 function SkillBadge({ name, accent, index }) {
     return (
@@ -66,7 +20,15 @@ function SkillBadge({ name, accent, index }) {
                 transition: 'all 0.25s ease',
             }}
             onMouseEnter={e => {
-                e.currentTarget.style.background = `rgba(${accent === '#00ff88' ? '0,255,136' : accent === '#00bcd4' ? '0,188,212' : '168,85,247'},0.08)`;
+                // Parse hex to rgb for rgba
+                const hexToRgb = (hex) => {
+                    const r = parseInt(hex.slice(1, 3), 16);
+                    const g = parseInt(hex.slice(3, 5), 16);
+                    const b = parseInt(hex.slice(5, 7), 16);
+                    return `${r},${g},${b}`;
+                };
+                const rgb = hexToRgb(accent);
+                e.currentTarget.style.background = `rgba(${rgb},0.08)`;
                 e.currentTarget.style.borderColor = accent;
                 e.currentTarget.style.transform = 'translateY(-4px) scale(1.05)';
                 e.currentTarget.style.boxShadow = `0 8px 24px ${accent}30`;
@@ -96,7 +58,6 @@ function SkillBadge({ name, accent, index }) {
             }}>
                 {name[0]}
             </div>
-
             {/* Name */}
             <span style={{
                 fontSize: '0.78rem',
@@ -110,7 +71,59 @@ function SkillBadge({ name, accent, index }) {
     );
 }
 
+// Fallback data in case the API is unreachable
+const FALLBACK_SKILLS = [
+    {
+        _id: 'f1',
+        category: 'Frontend',
+        emoji: '🎨',
+        accentColor: '#00ff88',
+        items: [
+            { name: 'React' }, { name: 'JavaScript' }, { name: 'HTML5' },
+            { name: 'CSS3' }, { name: 'Tailwind CSS' }, { name: 'Framer Motion' },
+        ],
+    },
+    {
+        _id: 'f2',
+        category: 'Backend',
+        emoji: '⚙️',
+        accentColor: '#00bcd4',
+        items: [
+            { name: 'Node.js' }, { name: 'Express.js' }, { name: 'MongoDB' },
+            { name: 'REST APIs' }, { name: 'JWT Auth' },
+        ],
+    },
+    {
+        _id: 'f3',
+        category: 'Tools & DevOps',
+        emoji: '🛠️',
+        accentColor: '#a855f7',
+        items: [
+            { name: 'GitHub' }, { name: 'Postman' }, { name: 'VS Code' },
+            { name: 'Vite' }, { name: 'Vercel' },
+        ],
+    },
+];
+
 export default function Skills() {
+    const [skillGroups, setSkillGroups] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const apiBase = (import.meta.env.VITE_API_URL || '') + '/api';
+        fetch(`${apiBase}/skills`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.data?.length > 0) {
+                    setSkillGroups(data.data);
+                } else {
+                    setSkillGroups(FALLBACK_SKILLS);
+                }
+            })
+            .catch(() => setSkillGroups(FALLBACK_SKILLS))
+            .finally(() => setLoading(false));
+    }, []);
+
     return (
         <section id="skills" style={{ padding: '100px 24px' }}>
             <div style={{ maxWidth: 1200, margin: '0 auto' }}>
@@ -131,63 +144,64 @@ export default function Skills() {
                     </p>
                 </motion.div>
 
-                {/* 3 Category cards */}
-                <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-                    gap: 24,
-                }}>
-                    {SKILLS.map((group, gi) => (
-                        <motion.div
-                            key={group.category}
-                            className="card"
-                            initial={{ opacity: 0, y: 40 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.6, delay: gi * 0.15 }}
-                            style={{ padding: 28 }}
-                        >
-                            {/* Card header */}
-                            <div style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 10,
-                                marginBottom: 24,
-                                paddingBottom: 16,
-                                borderBottom: '1px solid var(--border)',
-                            }}>
-                                <span style={{ fontSize: '1.4rem' }}>{group.emoji}</span>
-                                <h3 style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--text)' }}>
-                                    {group.category}
-                                </h3>
+                {/* Skeleton loading */}
+                {loading ? (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
+                        {[1, 2, 3].map(i => (
+                            <div key={i} className="card" style={{ padding: 28, height: 240, background: 'rgba(255,255,255,0.02)', animation: 'pulse 1.5s ease-in-out infinite' }} />
+                        ))}
+                    </div>
+                ) : (
+                    /* 3 Category cards */
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
+                        {skillGroups.map((group, gi) => (
+                            <motion.div
+                                key={group._id || group.category}
+                                className="card"
+                                initial={{ opacity: 0, y: 40 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.6, delay: gi * 0.15 }}
+                                style={{ padding: 28 }}
+                            >
+                                {/* Card header */}
                                 <div style={{
-                                    marginLeft: 'auto',
-                                    width: 8,
-                                    height: 8,
-                                    borderRadius: '50%',
-                                    background: group.accentColor,
-                                    boxShadow: `0 0 8px ${group.accentColor}`,
-                                }} />
-                            </div>
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 10,
+                                    marginBottom: 24,
+                                    paddingBottom: 16,
+                                    borderBottom: '1px solid var(--border)',
+                                }}>
+                                    <span style={{ fontSize: '1.4rem' }}>{group.emoji}</span>
+                                    <h3 style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--text)' }}>
+                                        {group.category}
+                                    </h3>
+                                    <div style={{
+                                        marginLeft: 'auto',
+                                        width: 8,
+                                        height: 8,
+                                        borderRadius: '50%',
+                                        background: group.accentColor,
+                                        boxShadow: `0 0 8px ${group.accentColor}`,
+                                    }} />
+                                </div>
 
-                            {/* Badge grid */}
-                            <div style={{
-                                display: 'grid',
-                                gridTemplateColumns: 'repeat(3, 1fr)',
-                                gap: 4,
-                            }}>
-                                {group.items.map((skill, i) => (
-                                    <SkillBadge
-                                        key={skill.name}
-                                        name={skill.name}
-                                        accent={group.accentColor}
-                                        index={i}
-                                    />
-                                ))}
-                            </div>
-                        </motion.div>
-                    ))}
-                </div>
+                                {/* Badge grid */}
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 4 }}>
+                                    {group.items.map((skill, i) => (
+                                        <SkillBadge
+                                            key={skill.name + i}
+                                            name={skill.name}
+                                            accent={group.accentColor}
+                                            index={i}
+                                        />
+                                    ))}
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                )}
             </div>
         </section>
     );
